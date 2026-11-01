@@ -1,0 +1,57 @@
+adapter.test.mjs
+  s_0c2b23ac346ac9::t_c8c82e8bd77d80 19,22-24
+  s_0c2b23ac346ac9::t_9f7b50edb918de 102,105
+  s_0c2b23ac346ac9::t_475710c4532732 14,16,49-50,89-90,92,204
+  s_0c2b23ac346ac9::t_ce515e684135ee 165-166
+  s_0c2b23ac346ac9::t_4feb5d2fc011c1 260-273
+  s_0c2b23ac346ac9::t_bd923f1bee18b1 1-12,17-18,20-21,25-47,53-61,63-88,93-101,103-104,106-108,113,116-123,125-128,130-131,133-138,140,142,144-164,167-203,205-259,274-314
+  s_0c2b23ac346ac9::t_e6227ba0203947 13
+  s_0c2b23ac346ac9::t_333afd822df9d6 15
+  s_0c2b23ac346ac9::t_c7852aacba2519 48
+  s_0c2b23ac346ac9::t_9aec96f8231fb2 51-52
+  s_0c2b23ac346ac9::t_36bac94cae46b7 62
+  s_0c2b23ac346ac9::t_9c4ee37481e4b1 91
+  s_0c2b23ac346ac9::t_69c6de08e29f42 109-112
+  s_0c2b23ac346ac9::t_a6485bb1b5590e 114-115
+  s_0c2b23ac346ac9::t_8df251cbadf80c 124
+  s_0c2b23ac346ac9::t_486056e4b2b28b 129
+  s_0c2b23ac346ac9::t_65878e83f63d09 132
+  s_0c2b23ac346ac9::t_ae1f8bfa6f733f 139
+  s_0c2b23ac346ac9::t_3743a82644680f 141
+  s_0c2b23ac346ac9::t_e8daee7116308d 143
+README.md
+  s_0c2b23ac346ac9::t_3543584f771ea4 59-62
+  s_0c2b23ac346ac9::t_2021e0b2d5bd9f 1-58,81-82
+  s_0c2b23ac346ac9::t_0cced98fe61d02 63-65,78-80
+adapter.mjs
+  s_0c2b23ac346ac9::t_58d22c09a6a58c 24-468,471,481,488,493-494
+  s_0c2b23ac346ac9::t_fbfa41615c2578 21-23
+  s_0c2b23ac346ac9::t_718ffc3f68fe3d 469-470
+  s_0c2b23ac346ac9::t_6b7c707f07ad74 472-474,478-480
+  s_0c2b23ac346ac9::t_e1c811ad3b0dd9 482-487
+  s_0c2b23ac346ac9::t_0133259147ba57 489-492
+LICENSE
+  s_0c2b23ac346ac9::t_3543584f771ea4 1-21
+.gitignore
+  s_0c2b23ac346ac9::t_1010f89bd31d38 1-3
+index.mjs
+  s_0c2b23ac346ac9::t_3cb90f237a4f36 1-22
+package.json
+  s_0c2b23ac346ac9::t_fa9f55b03ba466 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c73a818c8673de5942b5f555c65ad2969680210f",
+  "prompts": {},
+  "sessions": {
+    "s_0c2b23ac346ac9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1931e-abe5-7fd1-922a-f65385c3f281",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "SammySnake-d <173797004+SammySnake-d@users.noreply.github.com>"
+    }
+  }
+}
