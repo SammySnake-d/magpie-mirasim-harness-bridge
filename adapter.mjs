@@ -494,7 +494,14 @@ export class MirasimBridge {
   }
 
   tick() {
-    if (this.running) return this.running
+    if (this.running) {
+      // A resource import can take longer than the lease. Keep the active
+      // owner fresh while waiting; never reclaim a lease already lost.
+      if (this.owns()) {
+        try { writeJSON(this.paths.lock, { pid: this.pid }) } catch (e) { this.log(`mirasim owner: ${e.message}`) }
+      }
+      return this.running
+    }
     if (!this.claim()) return Promise.resolve()
     this.running = this.sync()
       .then(c => c.length && this.log(`mirasim: updated ${c.join(", ")}`))

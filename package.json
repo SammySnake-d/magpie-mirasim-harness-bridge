@@ -1,6 +1,6 @@
 {
   "name": "magpie-mirasim",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Mirasim's harnesses on magpie: Claude Code, Codex, DSH and Pi inside Mirasim each use the models magpie gives that agent, beside Mirasim's own relay, and magpie's wiring of them stays out of Mirasim's own route. Off or removed, Mirasim is put back.",
   "type": "module",
   "files": [

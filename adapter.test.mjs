@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test"
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs"
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import {
@@ -315,4 +315,29 @@ test("a holder gone (or silent) is taken over", async () => {
   await b.tick()
   expect(b.owns()).toBe(true)
   expect(JSON.parse(readFileSync(paths.setting, "utf8")).models.providers[PROVIDER_ID]).toBeDefined()
+})
+
+
+test("a bridge doing a long sync renews its owner lease", async () => {
+  const { dir, paths } = home()
+  const first = new MirasimBridge({ paths, dir, pid: 101, isAlive: () => true })
+  const second = new MirasimBridge({ paths, dir, pid: 202, isAlive: () => true })
+  expect(first.claim()).toBe(true)
+  const stale = new Date(Date.now() - 40000)
+  utimesSync(paths.lock, stale, stale)
+  first.running = Promise.resolve()
+  await first.tick()
+  expect(second.claim()).toBe(false)
+  expect(first.owns()).toBe(true)
+})
+
+test("a running bridge does not reclaim an owner lease another process holds", async () => {
+  const { dir, paths } = home()
+  const first = new MirasimBridge({ paths, dir, pid: 101, isAlive: () => true })
+  const second = new MirasimBridge({ paths, dir, pid: 202, isAlive: () => true })
+  expect(second.claim()).toBe(true)
+  first.running = Promise.resolve()
+  await first.tick()
+  expect(second.owns()).toBe(true)
+  expect(first.owns()).toBe(false)
 })
