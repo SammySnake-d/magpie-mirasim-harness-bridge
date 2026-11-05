@@ -25,6 +25,7 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, realpathSync, renameSyn
 import { homedir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { MirasimAtomClient, resourceSignature, syncResources } from "./resource-sync.mjs"
 
 export const NAME = "magpie-mirasim"
 export const HERE = dirname(fileURLToPath(import.meta.url))
@@ -47,6 +48,10 @@ export const PATHS = {
   dshPatch: join(home, ".dsh", "profiles", "web", "cordis.patch.yml"),
   // the model selections Mirasim knows it put DSH on
   dshLedger: join(home, ".mirasim", "agent-homes", "dsh", "selections-written.json"),
+  library: join(magpieDir, "library.json"),
+  librarySkills: join(magpieDir, "library", "skills"),
+  mirasimSkills: join(home, ".mirasim", "skills"),
+  mirasimRun: join(home, ".mirasim", "run"),
   magpieSettings: join(magpieDir, "settings.json"),
   magpiePlugins: join(magpieDir, "plugins.json"),
   // what this plugin changed of Mirasim's own, to put back
@@ -360,10 +365,13 @@ export async function catalogs(base, fetchImpl = fetch) {
 }
 
 export class MirasimBridge {
-  constructor({ paths = PATHS, fetchImpl = fetch, every = 5000, log = () => {}, dir = HERE, pid = process.pid, isAlive = alive } = {}) {
+  constructor({ paths = PATHS, fetchImpl = fetch, every = 5000, log = () => {}, dir = HERE, pid = process.pid, isAlive = alive, resourceClient } = {}) {
     Object.assign(this, { paths, fetchImpl, every, log, dir, pid, isAlive })
     this.timer = null
     this.running = null
+    this.resourceClient = resourceClient || (paths.mirasimRun ? new MirasimAtomClient(paths.mirasimRun) : null)
+    this.resourceKey = null
+    this.resourceRetryAt = 0
   }
 
   state() {
@@ -436,6 +444,21 @@ export class MirasimBridge {
       else if (prev && prev !== add) delete state.dshStart
     } catch (e) {
       failed.push(`dsh: ${e.message}`)
+    }
+    if (this.paths.library && this.paths.librarySkills && this.resourceClient) {
+      const key = resourceSignature(this.paths, this.resourceClient)
+      if (key && key !== this.resourceKey && Date.now() >= this.resourceRetryAt) {
+        try {
+          const result = await syncResources({ paths: this.paths, client: this.resourceClient, tracked: state.mcpMirror, log: this.log })
+          if (result.tracked) state.mcpMirror = result.tracked
+          if (result.changed) changed.push("resources")
+          if (result.retry) this.resourceRetryAt = Date.now() + 30000
+          else { this.resourceKey = resourceSignature(this.paths, this.resourceClient); this.resourceRetryAt = 0 }
+        } catch (e) {
+          failed.push(`resources: ${e.message}`)
+          this.resourceRetryAt = Date.now() + 30000
+        }
+      }
     }
     if (JSON.stringify(state) !== was) writeJSON(this.paths.state, state)
     if (failed.length) this.log(`mirasim: ${failed.join("; ")}`)

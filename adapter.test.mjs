@@ -1,5 +1,5 @@
-import { expect, test } from "bun:test"
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs"
+import { afterEach, expect, test } from "bun:test"
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import {
@@ -168,8 +168,12 @@ test("a git installation belongs to the exact registered package and preserves a
   expect(pluginOn({ plugins: [{ spec: "github:someone/another-plugin" }] }, options)).toBe(false)
 })
 
+const temporaryHomes = []
+afterEach(() => { for (const dir of temporaryHomes.splice(0)) rmSync(dir, { recursive: true, force: true }) })
+
 function home() {
   const dir = mkdtempSync(join(tmpdir(), "mirasim-bridge-"))
+  temporaryHomes.push(dir)
   const paths = {
     setting: join(dir, "mirasim", "setting.json"), codexCache: join(dir, "codex.json"), dshPatch: join(dir, "dsh.yml"),
     dshLedger: join(dir, "ledger.json"), magpieSettings: join(dir, "magpie", "settings.json"),

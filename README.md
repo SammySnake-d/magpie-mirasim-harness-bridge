@@ -21,12 +21,15 @@ agent。这个插件不是新的 agent：它让 Mirasim 里的每个 harness 用
 | Route | A magpie model runs straight at the gateway, never through Mirasim's relay, on either of Mirasim's routes. Mirasim's own models keep going to its relay. |
 | Codex | Codex's own model cache (`~/.codex`, which Mirasim shares) holds magpie's catalog too; on Mirasim's route those rows went to its relay, which refuses them. They are turned off in Mirasim's Codex menu (your own choices kept); the same models come as magpie's. |
 | DSH | magpie's wiring of DSH sets the model DSH starts on, in a file Mirasim's DSH sessions share; Mirasim, taking that start for DSH's own default, left its own route's DSH on magpie's model. The start is recorded as one Mirasim selected, so Mirasim puts DSH on its own model. DSH runs only models DSH itself has, which are those magpie's DSH connection registers: exactly DSH's catalog. |
-| MCP, skills, instructions | Mirasim's harnesses read the machine's own (`~/.claude`, `~/.codex`, `~/.dsh`, `~/.pi`): manage them in magpie's Library as Claude Code, Codex, DSH and Pi, and Mirasim follows. |
+| MCP | Magpie Library servers are imported as Mirasim connectors. Their per-agent enabled switches follow Magpie's selections for agents Mirasim supports; agents not selected in Magpie are turned off in Mirasim. Existing same-name connectors are not reinstalled or overwritten. |
+| Skills | Skills assigned to a Mirasim-supported harness are imported into Mirasim's global managed store without overwriting an existing same-name skill. The import is a copy; subsequent source edits do not automatically overwrite that copy. |
+| Instructions | The harnesses still read their native instruction files (`~/.claude`, `~/.codex`, `~/.dsh`, `~/.pi`). |
 | Usage | Requests count as the harness's own in magpie (claude, dsh, pi); Codex as mirasim, the name Mirasim gives the Codex it starts. |
 
-Turn the plugin off or remove it and Mirasim is put back as magpie's plugin
-host goes: the provider and its models out, the Codex rows back, the DSH
-record taken out if the plugin put it in. Nothing else is touched.
+Turn the plugin off or remove it and the bridge removes its model provider
+and profiles, restores the Codex rows and takes out its DSH record. Imported
+connectors, skill copies and their last enabled states stay in Mirasim; while
+the plugin is off they are no longer updated from Magpie.
 
 ## How
 
@@ -37,7 +40,13 @@ nothing with magpie. Every 5 s it reads each agent's catalog at the gateway
 API declared so Mirasim needn't probe) and one profile per model listing the
 harnesses whose catalog has it (stable ids from the model id, so a model
 picked somewhere stays picked). Each round writes only what differs and a
-gateway that doesn't answer leaves things as they are. What it changed of
+gateway that doesn't answer leaves things as they are. The same owner also
+checks Magpie's `library.json` and the live Mirasim
+connector/skill host. MCP credentials are handed to Mirasim's local secret
+store, never printed. New connectors and skills are imported; connector
+agent switches follow the library. A removed library MCP is disabled for
+previously mirrored agents but is not uninstalled. A Mirasim-uninstalled
+connector (tombstone) is not re-created. What it changed of
 Mirasim's own choices is kept in `~/.config/magpie-mirasim/state.json`, to put
 back. magpie loads plugins in its app's host and, for a moment, in a host each
 of its commands starts; only one instance keeps Mirasim (`owner.json`, renewed
@@ -71,8 +80,20 @@ request to a plugin). Code changed later loads after `magpie plugin off
   toward them. Hide models for Pi in magpie to make room.
 - It runs while magpie's plugin host does. Quit magpie and Mirasim's magpie
   models fail, as every agent wired to magpie.
-- The DSH and Codex fixes lean on how Mirasim 0.0.724 decides; a Mirasim that
-  decides otherwise leaves them doing nothing, not harm.
+- The DSH and Codex fixes lean on Mirasim's behavior; future versions may differ.
+- Mirasim can already read native MCP configuration while it also injects an
+  enabled connector named `custom-<name>`. If both refer to the same server,
+  a harness may load two copies. The bridge does not remove native agent
+  configuration or patch Mirasim, so use the agent's own MCP tools list to
+  check for duplicates. This is a Mirasim integration limitation, not a claim
+  of deduplication.
+- A source MCP with SSE, custom OAuth, disabled tools, or credentials embedded
+  in its URL is not automatically imported/enabled: those policies cannot be
+  represented safely by this bridge. Existing connectors and credentials
+  are preserved, so edits to their Magpie server definition are not applied
+  to an already installed connector. Skills are imported once, not live-mirrored.
+- The bridge uses the desktop host's local token at its usual port; when that
+  port is absent, it uses a single unambiguous local host, and otherwise waits.
 
 ## Test
 
