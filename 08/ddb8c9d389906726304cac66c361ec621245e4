@@ -1,0 +1,24 @@
+adapter.mjs
+  s_61a093f1d7185d::t_c412dff33ac748 497-504
+package.json
+  s_61a093f1d7185d::t_c412dff33ac748 3
+adapter.test.mjs
+  s_61a093f1d7185d::t_a3ed4ee67c8d39 332-343
+  s_61a093f1d7185d::t_d0a0bc379337ef 2,319-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "08ddb8c9d389906726304cac66c361ec621245e4",
+  "prompts": {},
+  "sessions": {
+    "s_61a093f1d7185d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1ab34-0d09-7f83-962f-b60faebc52cf",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "SammySnake-d <173797004+SammySnake-d@users.noreply.github.com>"
+    }
+  }
+}
